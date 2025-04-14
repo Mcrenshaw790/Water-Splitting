@@ -1,0 +1,38 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def Absorption_model(num_photons, pathlength, epsilon, concentration, dx):
+	
+    steps = int(pathlength / dx)
+
+    # Derived absorption probability per step
+    absorption_prob = 1 - np.exp(-epsilon * concentration * dx)
+
+    #List full of ones to 
+    photons_alive = np.ones(num_photons, dtype=bool)
+	
+    # Store how far each photon travels before being absorbed
+    distances = np.zeros(num_photons)
+	
+    for step in range(steps):
+        # Generate random numbers for surviving photons
+        rand_nums = np.random.rand(num_photons)
+        # Determine absorption for surviving photons
+        absorbed = (rand_nums < absorption_prob) & photons_alive
+        # Record distance for absorbed photons
+        distances[absorbed] = step * dx
+        # Mark absorbed photons as dead
+        photons_alive[absorbed] = False
+	
+
+    # Remaining photons made it to the end
+    distances[photons_alive] = path_length
+	
+    transmitted = np.sum(photons_alive)
+    transmission = transmitted / num_photons
+    absorbance = -np.log10(transmission)
+
+    return absorbance
+
+
